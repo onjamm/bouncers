@@ -20,8 +20,40 @@ static constexpr bn::fixed BASE_SPEED = 2;
 // Maximum number of bouncers on screen at once
 static constexpr int MAX_BOUNCERS = 20;
 
+// Average of X function
+bn::fixed average_x(bn::vector<bn::sprite_ptr, MAX_BOUNCERS>& sprites)
+{
+    // Add all x positions together
+    bn::fixed x_sum = 0;
+    for (bn::sprite_ptr sprite : sprites)
+    {
+        x_sum += sprite.x();
+    }
 
-int main() {
+    bn::fixed x_average = x_sum;
+
+    // Only divide if we have 1 or more
+    // Prevents division by 0
+    if (sprites.size() > 0)
+    {
+        x_average /= sprites.size();
+    }
+
+    return x_average;
+}
+//& modifies(mutates) original value instead of creating a copy which is default behavior
+void add_bouncer(bn::vector<bn::sprite_ptr, MAX_BOUNCERS> &sprites, bn::vector<bn::fixed, MAX_BOUNCERS> &x_speeds)
+{
+    // Only add if we're below the maximum
+    if (sprites.size() < sprites.max_size())
+    {
+        sprites.push_back(bn::sprite_items::dot.create_sprite());
+        x_speeds.push_back(BASE_SPEED);
+    }
+}
+
+int main()
+{
     bn::core::init();
 
     // Sprites and x speeds of bouncers
@@ -29,37 +61,22 @@ int main() {
     bn::vector<bn::sprite_ptr, MAX_BOUNCERS> sprites = {};
     bn::vector<bn::fixed, MAX_BOUNCERS> x_speeds = {};
 
-    while(true) {
+    while (true)
+    {
         // if A is pressed add a new bouncer
-        if(bn::keypad::a_pressed()) {
-            // Only add if we're below the maximum
-            if(sprites.size() < sprites.max_size()) {
-                sprites.push_back(bn::sprite_items::dot.create_sprite());
-                x_speeds.push_back(BASE_SPEED);
-            }
+        if (bn::keypad::a_pressed())
+        {
+            add_bouncer(sprites, x_speeds);
         }
 
-        // if B is pressed print the average to the console
-        if(bn::keypad::b_pressed()) {
-            // Add all x positions together
-            bn::fixed x_sum = 0;
-            for(bn::sprite_ptr sprite : sprites) {
-                x_sum += sprite.x();
-            }
-
-            bn::fixed x_average= x_sum;
-
-            // Only divide if we have 1 or more
-            // Prevents division by 0
-            if(sprites.size() > 0) {
-                x_average /= sprites.size();
-            }
-
-            BN_LOG("Average x: ", x_average);
+        if (bn::keypad::b_pressed())
+        {
+            BN_LOG("Average x: ", average_x(sprites));
         }
 
         // for each bouncer
-        for(int i = 0; i < sprites.size(); i++) {
+        for (int i = 0; i < sprites.size(); i++)
+        {
             bn::sprite_ptr sprite = sprites[i];
 
             bn::fixed x = sprite.x();
@@ -68,13 +85,15 @@ int main() {
             x += x_speeds[i];
 
             // If we've gone off the screen on the right
-            if(x > MAX_X) {
-                // Snap back to screen and reverse direction
+            if (x > MAX_X)
+            {
+                // Snap back to screen and reverse direction (invert the vector)
                 x = MAX_X;
-                x_speeds[i] *=-1;
+                x_speeds[i] *= -1;
             }
             // If we've gone off the screen on the left
-            if(x < MIN_X) {
+            if (x < MIN_X)
+            {
                 // Snap back to screen and reverse direction
                 x = MIN_X;
                 x_speeds[i] *= -1;

@@ -21,8 +21,7 @@ static constexpr bn::fixed BASE_SPEED = 2;
 static constexpr int MAX_BOUNCERS = 20;
 
 // After the curly of the class it needs a semi-colon, because the class is the statement itself
-class Bouncer
-{
+class Bouncer {
 public:
     bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
     bn::fixed x_speed = BASE_SPEED;
@@ -54,28 +53,28 @@ public:
     }
 };
 // Average of X function
-bn::fixed average_x(bn::vector<bn::sprite_ptr, MAX_BOUNCERS> &sprites)
-{
-    // Add all x positions together
-    bn::fixed x_sum = 0;
-    for (bn::sprite_ptr sprite : sprites)
-    {
-        x_sum += sprite.x();
-    }
+// bn::fixed average_x(bn::vector<bn::sprite_ptr, MAX_BOUNCERS> &sprites)
+// {
+//     // Add all x positions together
+//     bn::fixed x_sum = 0;
+//     for (bn::sprite_ptr sprite : sprites)
+//     {
+//         x_sum += sprite.x();
+//     }
 
-    bn::fixed x_average = x_sum;
+//     bn::fixed x_average = x_sum;
 
-    // Only divide if we have 1 or more
-    // Prevents division by 0
-    if (sprites.size() > 0)
-    {
-        x_average /= sprites.size();
-    }
+//     // Only divide if we have 1 or more
+//     // Prevents division by 0
+//     if (sprites.size() > 0)
+//     {
+//         x_average /= sprites.size();
+//     }
 
-    return x_average;
-}
+//     return x_average;
+// }
 //& modifies(mutates) original value instead of creating a copy which is default behavior
-void add_bouncer(bn::vector<bn::Bouncer, MAX_BOUNCERS> &bouncers)
+void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers)
 {
     // Only add if we're below the maximum
     if (bouncers.size() < bouncers.max_size())
@@ -106,7 +105,7 @@ int main()
         }
 
         // for each bouncer
-        for (Bouncer &bouncer : bouncers)
+        for (Bouncer& bouncer : bouncers)
         {
             bouncer.update();
         }

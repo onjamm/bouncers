@@ -52,27 +52,27 @@ public:
         sprite.set_x(x);
     }
 };
-// Average of X function
-// bn::fixed average_x(bn::vector<bn::sprite_ptr, MAX_BOUNCERS> &sprites)
-// {
-//     // Add all x positions together
-//     bn::fixed x_sum = 0;
-//     for (bn::sprite_ptr sprite : sprites)
-//     {
-//         x_sum += sprite.x();
-//     }
+//Average of X function
+bn::fixed average_x(bn::vector<Bouncer, MAX_BOUNCERS> &bouncers)
+{
+    // Add all x positions together
+    bn::fixed x_sum = 0;
+    for (Bouncer bouncer : bouncers)
+    {
+        x_sum += bouncer.sprite.x();
+    }
 
-//     bn::fixed x_average = x_sum;
+    bn::fixed x_average = x_sum;
 
-//     // Only divide if we have 1 or more
-//     // Prevents division by 0
-//     if (sprites.size() > 0)
-//     {
-//         x_average /= sprites.size();
-//     }
+    // Only divide if we have 1 or more
+    // Prevents division by 0
+    if (bouncers.size() > 0)
+    {
+        x_average /= bouncers.size();
+    }
 
-//     return x_average;
-// }
+    return x_average;
+}
 //& modifies(mutates) original value instead of creating a copy which is default behavior
 void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers)
 {
@@ -101,7 +101,7 @@ int main()
 
         if (bn::keypad::b_pressed())
         {
-            // BN_LOG("Average x: ", average_x(sprites));
+            BN_LOG("Average x: ", average_x(bouncers));
         }
 
         // for each bouncer

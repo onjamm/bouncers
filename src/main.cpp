@@ -6,18 +6,23 @@
 #include <bn_random.h>
 #include <bn_vector.h>
 #include <bn_log.h>
+#include <bn_random.h>
 
-#include "bn_sprite_items_dot.h"
+#include "bn_sprite_items_face.h"
 
 // Set max/min x position to be the edges of the display
 static constexpr int HALF_SCREEN_WIDTH = bn::display::width() / 2;
 static constexpr int HALF_SCREEN_HEIGHT = bn::display::height() / 2;
 static constexpr bn::fixed MIN_X = -HALF_SCREEN_WIDTH;
 static constexpr bn::fixed MAX_X = HALF_SCREEN_WIDTH;
+
+
 static constexpr bn::fixed MIN_Y = -HALF_SCREEN_HEIGHT;
 static constexpr bn::fixed MAX_Y = HALF_SCREEN_HEIGHT;
 
-// Starting speed of a bouncer
+bn::random rng = bn::random();
+
+// Starting speed of a bouncer -- changed to one so I can just do x_speed * rSpeed
 static constexpr bn::fixed BASE_SPEED = 2;
 
 // Maximum number of bouncers on screen at once
@@ -26,13 +31,15 @@ static constexpr int MAX_BOUNCERS = 20;
 // After the curly of the class it needs a semi-colon, because the class is the statement itself
 class Bouncer {
 public:
-    bn::sprite_ptr sprite = bn::sprite_items::dot.create_sprite();
-    bn::fixed x_speed = BASE_SPEED;
-    bn::fixed y_speed = BASE_SPEED;
+    //Get a random speed between 1 and 3
+    bn::sprite_ptr sprite = bn::sprite_items::face.create_sprite();
+    bn::fixed x_speed = rng.get_fixed(-2, 2);
+    bn::fixed y_speed = rng.get_fixed(-2, 2);
+    
 
     void update()
     {
-
+        
         bn::fixed x = sprite.x();
         bn::fixed y = sprite.y();
 
@@ -79,7 +86,7 @@ bn::fixed average_x(bn::vector<Bouncer, MAX_BOUNCERS> &bouncers)
 {
     // Add all x positions together
     bn::fixed x_sum = 0;
-    for (Bouncer bouncer : bouncers)
+    for (Bouncer& bouncer : bouncers)
     {
         x_sum += bouncer.sprite.x();
     }
@@ -94,6 +101,28 @@ bn::fixed average_x(bn::vector<Bouncer, MAX_BOUNCERS> &bouncers)
     }
 
     return x_average;
+}
+
+//Average of y function
+bn::fixed average_y(bn::vector<Bouncer, MAX_BOUNCERS> &bouncers)
+{
+    // Add all yy positions together
+    bn::fixed y_sum = 0;
+    for (Bouncer& bouncer : bouncers)
+    {
+        y_sum += bouncer.sprite.y();
+    }
+
+    bn::fixed y_average = y_sum;
+
+    // Only divide if we have 1 or more
+    // Prevents division by 0
+    if (bouncers.size() > 0)
+    {
+        y_average /= bouncers.size();
+    }
+
+    return y_average;
 }
 //& modifies(mutates) original value instead of creating a copy which is default behavior
 void add_bouncer(bn::vector<Bouncer, MAX_BOUNCERS>& bouncers)
@@ -124,6 +153,7 @@ int main()
         if (bn::keypad::b_pressed())
         {
             BN_LOG("Average x: ", average_x(bouncers));
+            BN_LOG("Average y: ", average_y(bouncers));
         }
 
         // for each bouncer
@@ -131,7 +161,6 @@ int main()
         {
             bouncer.update();
         }
-
         bn::core::update();
     }
 }
